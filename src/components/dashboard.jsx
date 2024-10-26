@@ -29,13 +29,10 @@ const Dashboard = () => {
       const { data } = await axios.get(
         `https://api.thingspeak.com/channels/${process.env.NEXT_PUBLIC_CHANNEL_ID}/feeds.json?api_key=${process.env.NEXT_PUBLIC_API_KEY}&results=2`
       );
-      console.log(data);
       const lastEntryIndex = data.feeds.length - 1;
       const lastEntry = data.feeds[lastEntryIndex];
       setTemperature(lastEntry.field1);
       setHumidity(lastEntry.field2);
-      console.log("temperature : ", temperature);
-      console.log("humidity : ", humidity);
     } catch (error) {
       console.error("Error fetching sensor data:", error);
     }
