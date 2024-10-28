@@ -1,47 +1,98 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import TempImage from "@/public/temperature.png";
 import HumidityImg from "@/public/humidity.png";
 import Card from "@/components/card";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Dashboard = () => {
-  // States for temperature and humidity
   const [temperature, setTemperature] = useState(0);
   const [humidity, setHumidity] = useState(0);
+  const [status, setStatus] = useState(200);
+  const prevStatusRef = useRef(200);
 
-  // Fetch sensor data every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchData();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
   useEffect(() => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 20000);
+
+    return () => clearInterval(intervalId); // Clear the interval on cleanup
+  }, []);
+
+  useEffect(() => {
+    // Only notify if status has changed
+    if (prevStatusRef.current !== status) {
+      prevStatusRef.current = status; // Store the previous error state
+      let message = "";
+      if (status === 200) {
+        message = "Sensor readings fetched successfully 🎉";
+        notifySuccess(message);
+      } else if (status === 404) {
+        message = "Not found any sensor readings !";
+        notifyError(message);
+      } else {
+        message = "Error fetching sensor readings !";
+        notifyError(message);
+      }
+    }
+  }, [status]);
+
+  const notifyError = (msg) => {
+    toast.error(msg, {
+      position: "bottom-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+  const notifySuccess = (msg) => {
+    toast.success(msg, {
+      position: "bottom-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
   // Function to fetch sensor data
   const fetchData = async () => {
     try {
-      // Replace with actual API or WebSocket call
       const { data } = await axios.get(
         `https://api.thingspeak.com/channels/${process.env.NEXT_PUBLIC_CHANNEL_ID}/feeds.json?api_key=${process.env.NEXT_PUBLIC_API_KEY}&results=2`
       );
       const lastEntryIndex = data.feeds.length - 1;
       const lastEntry = data.feeds[lastEntryIndex];
-      setTemperature(lastEntry.field1);
-      setHumidity(lastEntry.field2);
+      if (lastEntry.field1 !== temperature) {
+        setTemperature(lastEntry.field1);
+      }
+      if (lastEntry.field2 !== humidity) {
+        setHumidity(lastEntry.field2);
+      }
+      setStatus(200);
     } catch (error) {
-      console.error("Error fetching sensor data:", error);
+      setStatus(error.response ? error.response.status : 500);
+      // console.error("Error fetching sensor data:", error);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-500 p-5">
-      <div className=" rounded-lg  p-5 sm:p-12 max-w-xl w-full shadow-2xl">
-        <h1 className="text-3xl font-bold text-center text-gray-700 mb-16 mt-4">
+      <div className=" rounded-lg  p-4 pb-14 sm:p-12 max-w-xl w-full shadow-2xl">
+        <h1 className="text-3xl font-bold text-center text-gray-700 mb-16 mt-4 shadow-md p-2">
           Real-Time Sensor Dashboard
         </h1>
         <div className="space-y-10">
@@ -49,6 +100,20 @@ const Dashboard = () => {
           <Card img={HumidityImg} data={humidity} name={"Humidity"} />
         </div>
       </div>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastClassName="no-wrap-toast"
+      />
+      <ToastContainer />
     </div>
   );
 };
