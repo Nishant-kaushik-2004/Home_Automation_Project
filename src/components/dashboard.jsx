@@ -40,7 +40,6 @@ const Dashboard = () => {
         message = "Error fetching sensor readings !";
         notifyError(message);
       }
-      console.log(message);
     }
   }, [status]);
 
@@ -76,7 +75,6 @@ const Dashboard = () => {
         `https://api.thingspeak.com/channels/${process.env.NEXT_PUBLIC_CHANNEL_ID}/feeds.json?api_key=${process.env.NEXT_PUBLIC_API_KEY}&results=1`
       );
       const lastEntry = data.feeds[0];
-      console.log(data);
       if (lastEntry.field1 !== humidity) {
         setHumidity(lastEntry.field1);
       }
@@ -91,7 +89,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-500 p-5">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-500">
       <div className=" rounded-lg  p-4 pb-14 sm:p-12 max-w-xl w-full shadow-2xl">
         <h1 className="text-3xl font-bold text-center text-gray-700 mb-16 mt-4 shadow-md p-2">
           Real-Time Sensor Dashboard
