@@ -10,8 +10,8 @@ import "react-toastify/dist/ReactToastify.css";
 const Dashboard = () => {
   const [temperature, setTemperature] = useState(0);
   const [humidity, setHumidity] = useState(0);
-  const [status, setStatus] = useState(200);
-  const prevStatusRef = useRef(200);
+  const [status, setStatus] = useState(null);
+  const prevStatusRef = useRef(null);
 
   useEffect(() => {
     fetchData();
@@ -40,6 +40,7 @@ const Dashboard = () => {
         message = "Error fetching sensor readings !";
         notifyError(message);
       }
+      console.log(message);
     }
   }, [status]);
 
@@ -72,15 +73,15 @@ const Dashboard = () => {
   const fetchData = async () => {
     try {
       const { data } = await axios.get(
-        `https://api.thingspeak.com/channels/${process.env.NEXT_PUBLIC_CHANNEL_ID}/feeds.json?api_key=${process.env.NEXT_PUBLIC_API_KEY}&results=2`
+        `https://api.thingspeak.com/channels/${process.env.NEXT_PUBLIC_CHANNEL_ID}/feeds.json?api_key=${process.env.NEXT_PUBLIC_API_KEY}&results=1`
       );
-      const lastEntryIndex = data.feeds.length - 1;
-      const lastEntry = data.feeds[lastEntryIndex];
-      if (lastEntry.field1 !== temperature) {
-        setTemperature(lastEntry.field1);
+      const lastEntry = data.feeds[0];
+      console.log(data);
+      if (lastEntry.field1 !== humidity) {
+        setHumidity(lastEntry.field1);
       }
-      if (lastEntry.field2 !== humidity) {
-        setHumidity(lastEntry.field2);
+      if (lastEntry.field2 !== temperature) {
+        setTemperature(lastEntry.field2);
       }
       setStatus(200);
     } catch (error) {
