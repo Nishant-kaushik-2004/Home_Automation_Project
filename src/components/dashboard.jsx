@@ -112,7 +112,7 @@ const Dashboard = () => {
         <div className="space-y-10">
           <Card img={TempImage} data={temperature} name={"Temperature"} />
           {/* <Card img={HumidityImg} data={humidity} name={"Humidity"} /> */}
-          <p className="sm:ml-14 ml-5">
+          <p className="sm:ml-14 ml-3 sm:text-base text-sm">
             last time Sensor active at {`${lastActive}`}
           </p>
         </div>
