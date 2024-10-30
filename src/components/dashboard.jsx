@@ -8,18 +8,25 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Dashboard = () => {
-  const [temperature, setTemperature] = useState(()=>{
-    return localStorage.getItem("temperature")|| 28.3;
-  });
-  const [humidity, setHumidity] = useState(()=>{
-    return localStorage.getItem("humidity")|| 60.2;
-  });
+  const [temperature, setTemperature] = useState(28.2);
+  const [humidity, setHumidity] = useState(59);
   const [status, setStatus] = useState(null);
   const [lastActive, setLastActive] = useState(null);
   const prevStatusRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const temp = localStorage.getItem("temperature");
+      const hum = localStorage.getItem("humidity");
+      if (temp) setTemperature(temp);
+      if (hum) setHumidity(hum);
+    }
+  }, []);
+
   useEffect(() => {
     fetchData();
   }, []);
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchData();
@@ -91,20 +98,20 @@ const Dashboard = () => {
       );
       const lastEntry = data.feeds[0];
       if (
-        lastEntry.field2 !== humidity &&
-        lastEntry.field2 !== "nan" &&
-        lastEntry.field2
-      ) {
-        setHumidity(lastEntry.field2);
-        localStorage.setItem("humidity",lastEntry.field2);
-      }
-      if (
         lastEntry.field1 !== temperature &&
         lastEntry.field1 !== "nan" &&
         lastEntry.field1
       ) {
         setTemperature(lastEntry.field1);
-        localStorage.setItem("temperature",lastEntry.field1);
+        localStorage.setItem("temperature", lastEntry.field1);
+      }
+      if (
+        lastEntry.field2 !== humidity &&
+        lastEntry.field2 !== "nan" &&
+        lastEntry.field2
+      ) {
+        setHumidity(lastEntry.field2);
+        localStorage.setItem("humidity", lastEntry.field2);
       }
       let date = new Date(lastEntry.created_at);
       let kolkataTime = new Intl.DateTimeFormat("en-IN", options).format(date);
@@ -126,7 +133,7 @@ const Dashboard = () => {
           <Card img={TempImage} data={temperature} name={"Temperature"} />
           <Card img={HumidityImg} data={humidity} name={"Humidity"} />
           <p className="sm:ml-14 ml-3 sm:text-base text-sm">
-            last time Sensor active at {`${lastActive}`}
+            last Sensor activity at {`${lastActive}`}
           </p>
         </div>
       </div>
