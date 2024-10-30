@@ -2,21 +2,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import TempImage from "@/public/temperature.png";
-// import HumidityImg from "@/public/humidity.png";
+import HumidityImg from "@/public/humidity.png";
 import Card from "@/components/card";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Dashboard = () => {
-  const [temperature, setTemperature] = useState(0);
-  // const [humidity, setHumidity] = useState(0);
+  const [temperature, setTemperature] = useState(()=>{
+    return localStorage.getItem("temperature")|| 28.3;
+  });
+  const [humidity, setHumidity] = useState(()=>{
+    return localStorage.getItem("humidity")|| 60.2;
+  });
   const [status, setStatus] = useState(null);
   const [lastActive, setLastActive] = useState(null);
   const prevStatusRef = useRef(null);
   useEffect(() => {
     fetchData();
   }, []);
-
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchData();
@@ -86,12 +89,23 @@ const Dashboard = () => {
       const { data } = await axios.get(
         `https://api.thingspeak.com/channels/${process.env.NEXT_PUBLIC_CHANNEL_ID}/feeds.json?api_key=${process.env.NEXT_PUBLIC_API_KEY}&results=1`
       );
+      console.log(data);
       const lastEntry = data.feeds[0];
-      // if (lastEntry.field1 !== humidity) {
-      //   setHumidity(lastEntry.field1);
-      // }
-      if (lastEntry.field2 !== temperature) {
-        setTemperature(lastEntry.field2);
+      if (
+        lastEntry.field2 !== humidity &&
+        lastEntry.field2 !== "nan" &&
+        lastEntry.field2
+      ) {
+        setHumidity(lastEntry.field2);
+        localStorage.setItem("humidity",lastEntry.field2);
+      }
+      if (
+        lastEntry.field1 !== temperature &&
+        lastEntry.field1 !== "nan" &&
+        lastEntry.field1
+      ) {
+        setTemperature(lastEntry.field1);
+        localStorage.setItem("temperature",lastEntry.field1);
       }
       let date = new Date(lastEntry.created_at);
       let kolkataTime = new Intl.DateTimeFormat("en-IN", options).format(date);
@@ -111,7 +125,7 @@ const Dashboard = () => {
         </h1>
         <div className="space-y-10">
           <Card img={TempImage} data={temperature} name={"Temperature"} />
-          {/* <Card img={HumidityImg} data={humidity} name={"Humidity"} /> */}
+          <Card img={HumidityImg} data={humidity} name={"Humidity"} />
           <p className="sm:ml-14 ml-3 sm:text-base text-sm">
             last time Sensor active at {`${lastActive}`}
           </p>

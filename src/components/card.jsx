@@ -14,7 +14,7 @@ export default function Card({ img, data, name }) {
           {name}
         </h2>
         <span className="text-2xl sm:text-3xl font-bold text-blue-500 ml-auto sm:pr-10">
-          {Number(data).toPrecision(3)}
+          {Number(data)?.toPrecision(3)}
           {`${name === "Temperature" ? "°C" : "%"}`}
         </span>
       </div>
