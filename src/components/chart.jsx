@@ -3,7 +3,7 @@ import React from "react";
 export default function Chart({ fieldValue }) {
   return (
     <iframe
-      className={`border w-[450px] h-[260px] sm:w-[550px] sm:h-[300px] border-gray-50  bg-gray-100 p-2 rounded-lg shadow-lg transition-transform transform hover:scale-105 duration-300 ease-in-out scale-[0.8] sm:mt-0 -mt-5 ${
+      className={`border w-[450px] h-[260px] sm:w-[550px] sm:h-[300px] border-gray-50  bg-gray-100 p-2 rounded-lg shadow-lg transition-transform transform sm:hover:scale-105 duration-300 ease-in-out scale-[0.8] sm:mt-0 -mt-5 ${
         fieldValue === 2 && "-mt-6"
       } sm:scale-100`}
       style={{ border: "1px solid #cccccc" }}

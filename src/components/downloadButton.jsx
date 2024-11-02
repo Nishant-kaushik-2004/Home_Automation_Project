@@ -27,17 +27,13 @@ const ThingSpeakDataDownloader = () => {
   const handleDateRange = (dateRange) => {
     if (dateRange.from) {
       setStartDate(formatLocalDate(dateRange?.from));
-      console.log("from", formatLocalDate(dateRange?.from));
     } else if (dateRange.to) {
       setEndDate(formatLocalDate(dateRange?.to));
-      console.log("from ka else", formatLocalDate(dateRange?.from));
     }
     if (dateRange.to) {
       setEndDate(formatLocalDate(dateRange?.to));
-      console.log("to", formatLocalDate(dateRange?.to));
     } else if (dateRange.from) {
       setEndDate(formatLocalDate(dateRange?.from));
-      console.log("to ka else", formatLocalDate(dateRange?.from));
     }
   };
 
@@ -114,6 +110,7 @@ const ThingSpeakDataDownloader = () => {
           ))}
         </div>
         <DatePickerWithRange handleDateRange={handleDateRange} />
+        <p className="text-sm">NOTE - Don't select a single date.</p>
         <button
           onClick={downloadData}
           disabled={isDownloading}
