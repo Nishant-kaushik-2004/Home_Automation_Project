@@ -5,3 +5,9 @@
 .no-wrap-toast {
   white-space: nowrap;
 }
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+}
