@@ -1,23 +1,34 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function Chart({ fieldValue }) {
   const [width, setWidth] = useState("550");
   const [height, setHeight] = useState("300");
 
-  if (typeof window !== "undefined") {
-    // Function to resize the Thingspeak chart based on window width
-    function resizeChart() {
-      if (window.innerWidth <= 768) {
-        // Mobile view
-        setWidth("450");
-        setHeight("280");
+  // Resize the chart based on window width
+  useEffect(() => {
+    // Check if window is defined to avoid SSR issues
+    if (typeof window !== "undefined") {
+      function resizeChart() {
+        if (window.innerWidth <= 768) {
+          setWidth("450");
+          setHeight("280");
+        } else {
+          setWidth("550");
+          setHeight("300");
+        }
       }
+
+      // Initial resize on component mount
+      resizeChart();
+
+      // Add event listener for resizing
+      window.addEventListener("resize", resizeChart);
+
+      // Cleanup on unmount
+      return () => window.removeEventListener("resize", resizeChart);
     }
-    // Resize on page load and when window is resized
-    window.addEventListener("load", resizeChart);
-    window.addEventListener("resize", resizeChart);
-  }
+  }, []);
   return (
     <div className="flex justify-center items-center pb-5 -mx-2">
       <iframe
