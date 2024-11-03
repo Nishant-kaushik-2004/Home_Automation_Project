@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 
 export default function Chart({ fieldValue }) {
@@ -6,7 +7,7 @@ export default function Chart({ fieldValue }) {
 
   // Function to resize the Thingspeak chart based on window width
   function resizeChart() {
-    if (window.innerWidth <= 768) {
+    if (typeof window !== "undefined" && window.innerWidth <= 768) {
       // Mobile view
       setWidth("450");
       setHeight("280");
