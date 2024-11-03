@@ -11,8 +11,8 @@ export default function Chart({ fieldValue }) {
     if (typeof window !== "undefined") {
       function resizeChart() {
         if (window.innerWidth <= 768) {
-          setWidth("450");
-          setHeight("280");
+          setWidth("370");
+          setHeight("230");
         } else {
           setWidth("550");
           setHeight("300");
@@ -32,7 +32,7 @@ export default function Chart({ fieldValue }) {
   return (
     <div className="flex justify-center items-center pb-5 -mx-2">
       <iframe
-        className={`border w-[450px] h-[230px] sm:w-[550px] sm:h-[300px] border-gray-50  bg-gray-100 p-1 rounded-lg shadow-lg transition-transform transform sm:hover:scale-105 duration-300 ease-in-out`}
+        className={`border w-[372px] h-[240px] sm:w-[550px] sm:h-[300px] border-gray-50  bg-gray-100 p-1 rounded-lg shadow-lg transition-transform transform sm:hover:scale-105 duration-300 ease-in-out`}
         src={`https://thingspeak.com/channels/${
           process.env.NEXT_PUBLIC_CHANNEL_ID
         }/charts/${fieldValue}?title=${
