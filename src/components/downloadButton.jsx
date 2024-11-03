@@ -92,7 +92,7 @@ const ThingSpeakDataDownloader = () => {
     <div className="sm:w-[420px] bg-[#fdfdfd] shadow-lg rounded-xl overflow-hidden border border-gray-200 border-t-4 mt-8 sm:mt-0 ">
       <div className="p-6 space-y-6">
         <h3 className="text-lg font-semibold text-center text-gray-800">
-          Download Sensor Data
+          Download Feed History
         </h3>
 
         <div className="grid grid-cols-3 gap-3">

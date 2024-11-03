@@ -127,7 +127,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-500 p-5">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-green-500 p-3">
       <div className="sm:pb-20 rounded-lg bg-[#f0f0f0] p-4 pb-14 sm:p-12 max-w-[1200px] w-full shadow-2xl">
         <h1 className="sm:mb-20 text-3xl mx-auto font-bold text-center max-w-lg text-gray-600 mb-12  shadow-md p-2">
           Real-Time Sensor Dashboard
@@ -148,12 +148,12 @@ const Dashboard = () => {
             <div className="hidden md:block">
               <ThingSpeakDataDownloader />
             </div>
-            <div className="-ml-[55px] sm:space-y-10 block md:hidden">
+            <div className="sm:space-y-10 block md:hidden ">
               <Chart fieldValue={1}></Chart>
               <Chart fieldValue={2}></Chart>
             </div>
           </div>
-          <div className="block md:hidden -mt-8">
+          <div className="block md:hidden -mt-8 ">
             <ThingSpeakDataDownloader />
           </div>
           <div className="sm:space-y-10 hidden md:block">
