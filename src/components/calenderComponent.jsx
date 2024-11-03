@@ -15,8 +15,8 @@ import {
 
 export function DatePickerWithRange({ className, handleDateRange }) {
   const [date, setDate] = React.useState({
-    from: new Date(2024, 9, 25),
-    to: addDays(new Date(2024, 9, 25), 9),
+    from: new Date(Date.now()-7*24*60*60*1000),
+    to: addDays(new Date(Date.now()-7*24*60*60*1000), 7),
   });
   React.useEffect(() => {
     handleDateRange(date);

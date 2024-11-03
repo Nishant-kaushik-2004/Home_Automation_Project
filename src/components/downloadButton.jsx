@@ -8,10 +8,12 @@ const ThingSpeakDataDownloader = () => {
   const [startDate, setStartDate] = useState("2024-10-30%2015:48:00");
   const [endDate, setEndDate] = useState("2024-11-02%2015:48:00");
 
-  const formatLocalDate = (localDate) => {
+  const formatLocalDate = (localDate, addDate) => {
     // Create a Date object from the local date
     const date = new Date(localDate);
 
+    // Add one day
+    date.setDate(date.getDate() + addDate);
     // Extract date components in local time
     const year = date.getFullYear(); // Local year
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Local month (0-11)
@@ -25,15 +27,21 @@ const ThingSpeakDataDownloader = () => {
   };
 
   const handleDateRange = (dateRange) => {
-    if (dateRange.from) {
-      setStartDate(formatLocalDate(dateRange?.from));
-    } else if (dateRange.to) {
-      setEndDate(formatLocalDate(dateRange?.to));
+    const start = dateRange?.from;
+    const end = dateRange?.to;
+    if (start) {
+      setStartDate(formatLocalDate(start, 0));
+    } else if (end) {
+      setEndDate(formatLocalDate(end, -1));
     }
-    if (dateRange.to) {
-      setEndDate(formatLocalDate(dateRange?.to));
-    } else if (dateRange.from) {
-      setEndDate(formatLocalDate(dateRange?.from));
+    if (end) {
+      setEndDate(formatLocalDate(end, 0));
+    } else if (start) {
+      setEndDate(formatLocalDate(start, 1));
+    }
+    if (!start && !end) {
+      setStartDate(start);
+      setEndDate(end);
     }
   };
 
@@ -42,7 +50,11 @@ const ThingSpeakDataDownloader = () => {
 
     try {
       const format = downloadOptions.find((opt) => opt.id === selectedFormat);
-      const url = `https://api.thingspeak.com/channels/${process.env.NEXT_PUBLIC_CHANNEL_ID}/feeds.${format.extension}?start=${startDate}&end=${endDate}:00&timezone=Asia%2FKolkata&api_key=${process.env.NEXT_PUBLIC_API_KEY}`;
+      const url = `https://api.thingspeak.com/channels/${
+        process.env.NEXT_PUBLIC_CHANNEL_ID
+      }/feeds.${format.extension}?${startDate && `start=${startDate}`}&${
+        endDate && `end=${endDate}`
+      }:00&timezone=Asia%2FKolkata&api_key=${process.env.NEXT_PUBLIC_API_KEY}`;
 
       const response = await fetch(url);
 
@@ -110,7 +122,6 @@ const ThingSpeakDataDownloader = () => {
           ))}
         </div>
         <DatePickerWithRange handleDateRange={handleDateRange} />
-        <p className="text-sm">NOTE - Don't select a single date.</p>
         <button
           onClick={downloadData}
           disabled={isDownloading}
@@ -179,8 +190,8 @@ const ThingSpeakDataDownloader = () => {
         </button>
 
         <p className="text-sm text-gray-500 text-center">
-          Select and Download sensor feed history for a particular range of
-          dates in your preferred format.
+          Download sensor feed history for the selected range of dates in your
+          preferred format.
         </p>
       </div>
     </div>
