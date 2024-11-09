@@ -168,14 +168,31 @@ const Dashboard = () => {
 
       if (
         newTemperature != localStorage.getItem("temperature") &&
+        newHumidity !== localStorage.getItem("humidity") &&
+        newRainValue !== localStorage.getItem("RainValue") &&
+        lastEntry.field1 !== "nan" &&
+        lastEntry.field2 !== "nan" &&
+        lastEntry.field3 !== "nan" &&
+        lastEntry.field1 &&
+        lastEntry.field2 &&
+        lastEntry.field3
+      ) {
+        setTemperature(newTemperature);
+        setHumidity(newHumidity);
+        setRainValue(newRainValue);
+        localStorage.setItem("temperature", newTemperature);
+        localStorage.setItem("humidity", newHumidity);
+        localStorage.setItem("RainValue", newRainValue);
+        saveInDatabase("updateAll", lastEntry);
+      } else if (
+        newTemperature != localStorage.getItem("temperature") &&
         lastEntry.field1 !== "nan" &&
         lastEntry.field1
       ) {
         setTemperature(newTemperature);
         localStorage.setItem("temperature", newTemperature);
         saveInDatabase("updateTemperature", lastEntry);
-      }
-      if (
+      } else if (
         newHumidity !== localStorage.getItem("humidity") &&
         lastEntry.field2 !== "nan" &&
         lastEntry.field2
@@ -183,8 +200,7 @@ const Dashboard = () => {
         setHumidity(newHumidity);
         localStorage.setItem("humidity", newHumidity);
         saveInDatabase("updateHumidity", lastEntry);
-      }
-      if (
+      } else if (
         newRainValue !== localStorage.getItem("RainValue") &&
         lastEntry.field3 !== "nan" &&
         lastEntry.field3

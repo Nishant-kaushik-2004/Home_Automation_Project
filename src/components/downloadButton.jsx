@@ -61,12 +61,10 @@ const ThingSpeakDataDownloader = () => {
 
       const response = await fetch(url);
       if (response.status === 404) {
-        console.log("status 404 aa gya h per toast nhi chala");
         notifyError("No readings found in the selected dates");
         return;
       }
       if (!response.ok) {
-        console.log(response.statusText);
         throw new Error("Failed to fetch data");
       }
 
