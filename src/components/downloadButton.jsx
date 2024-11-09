@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { downloadOptions } from "@/data/downloadOptionsData";
 import { DatePickerWithRange } from "@/components/calenderComponent";
+import { toast } from "react-toastify";
 
 const ThingSpeakDataDownloader = () => {
   const [isDownloading, setIsDownloading] = useState(false);
@@ -18,9 +19,9 @@ const ThingSpeakDataDownloader = () => {
     const year = date.getFullYear(); // Local year
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Local month (0-11)
     const day = String(date.getDate()).padStart(2, "0"); // Local day
-    const hours = String(date.getHours()).padStart(2, "0"); // Local hours (0-23)
-    const minutes = String(date.getMinutes()).padStart(2, "0"); // Local minutes
-    const seconds = String(date.getSeconds()).padStart(2, "0"); // Local seconds
+    const hours = "00"
+    const minutes = "00"
+    const seconds = "00"
 
     // Construct the desired format
     return `${year}-${month}-${day}%20${hours}:${minutes}:${seconds}`;
@@ -29,36 +30,43 @@ const ThingSpeakDataDownloader = () => {
   const handleDateRange = (dateRange) => {
     const start = dateRange?.from;
     const end = dateRange?.to;
-    if (start) {
+    if (start && end) {
       setStartDate(formatLocalDate(start, 0));
-    } else if (end) {
-      setEndDate(formatLocalDate(end, -1));
-    }
-    if (end) {
       setEndDate(formatLocalDate(end, 0));
-    } else if (start) {
+    } else if (start && !end) {
+      setStartDate(formatLocalDate(start, 0));
       setEndDate(formatLocalDate(start, 1));
-    }
-    if (!start && !end) {
-      setStartDate(start);
-      setEndDate(end);
+    } else if (!start && end) {
+      setStartDate(formatLocalDate(end, 0));
+      setEndDate(formatLocalDate(end, 1));
+    } else {
+      toast.error("Please select dates ,selected dates can not be empty");
     }
   };
-
+  const notifyError = (msg) => {
+    toast.info(msg)
+  };
   const downloadData = async () => {
     setIsDownloading(true);
 
     try {
       const format = downloadOptions.find((opt) => opt.id === selectedFormat);
-      const url = `https://api.thingspeak.com/channels/${
-        process.env.NEXT_PUBLIC_CHANNEL_ID
-      }/feeds.${format.extension}?${startDate && `start=${startDate}`}&${
-        endDate && `end=${endDate}`
-      }:00&timezone=Asia%2FKolkata&api_key=${process.env.NEXT_PUBLIC_API_KEY}`;
+      // Construct the URL with query parameters
+      const queryParams = new URLSearchParams({
+        startDate,
+        endDate,
+        format: selectedFormat,
+      }).toString();
+      const url = `api/downloadReadings?${queryParams}`;
 
       const response = await fetch(url);
-
+      if (response.status === 404) {
+        console.log("status 404 aa gya h per toast nhi chala");
+        notifyError("No readings found in the selected dates");
+        return;
+      }
       if (!response.ok) {
+        console.log(response.statusText);
         throw new Error("Failed to fetch data");
       }
 

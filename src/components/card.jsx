@@ -14,9 +14,9 @@ export default function Card({ img, data, name }) {
           <Image alt={`${name} icon`} src={img} height={50}></Image>
           {name}
         </h2>
-        <span className="text-2xl sm:text-3xl font-bold text-blue-500 ml-auto">
-          {Number(data).toPrecision(3)}
-          {`${name === "Temperature" ? "°C" : "%"}`}
+        <span className={`text-2xl sm:text-3xl font-bold text-blue-500 ml-auto ${name==="RainValue" && "pr-5"}`}>
+          {Number(data).toPrecision(4)}
+          {`${name === "Temperature" ? "°C" : name === "RainValue" ? "" : "%"}`}
         </span>
       </div>
       <p className="text-gray-500 ml-10">Live {name} Reading</p>
