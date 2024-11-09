@@ -13,7 +13,6 @@ export async function GET(req) {
     const startDate = decodeURIComponent(searchParams.get("startDate"));
     const endDate = decodeURIComponent(searchParams.get("endDate"));
     const format = searchParams.get("format");
-    console.log(startDate, endDate, format);
 
     const filters = {
       created_at: {
@@ -27,13 +26,6 @@ export async function GET(req) {
           .toDate(),
       },
     };
-    console.log(moment(startDate.replace("%20", " "), "YYYY-MM-DD HH:mm:ss")
-    .add(5, "hours")
-    .add(30, "minutes")
-    .toDate(),moment(endDate.replace("%20", " "), "YYYY-MM-DD HH:mm:ss")
-    .add(5, "hours")
-    .add(30, "minutes")
-    .toDate());
     const filteredReadings = await ReadingsModel.find(filters).lean();
 
     if (!filteredReadings.length) {
@@ -71,7 +63,6 @@ export async function GET(req) {
     } else if (format === "json") {
       return NextResponse.json(filteredReadings, { status: 200 });
     } else if (format === "xml") {
-      console.log("inside xml formatter");
       // Create XML using xmlbuilder2
       const xml = create({ version: "1.0", encoding: "UTF-8" }).ele("root");
 
