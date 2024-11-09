@@ -32,7 +32,7 @@ const ThingSpeakDataDownloader = () => {
     const end = dateRange?.to;
     if (start && end) {
       setStartDate(formatLocalDate(start, 0));
-      setEndDate(formatLocalDate(end, 0));
+      setEndDate(formatLocalDate(end, 1));
     } else if (start && !end) {
       setStartDate(formatLocalDate(start, 0));
       setEndDate(formatLocalDate(start, 1));

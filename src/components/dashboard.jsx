@@ -19,6 +19,9 @@ const Dashboard = () => {
   const [status, setStatus] = useState(null);
   const [lastActive, setLastActive] = useState(null);
   const prevStatusRef = useRef(null);
+  const temperatureStatusRef = useRef(25);
+  const humidityStatusRef = useRef(60);
+  const rainStatusRef = useRef(1000);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -85,6 +88,38 @@ const Dashboard = () => {
       theme: "light",
     });
   };
+  useEffect(() => {
+    if (temperatureStatusRef.current === temperature) return;
+    if (temperatureStatusRef.current < 30 && Number(temperature) >= 30) {
+      temperatureStatusRef.current = temperature;
+      alert("It's a sunny day 🌤️! temperature started rising 🥵");
+    } else if (temperatureStatusRef.current >= 30 && Number(temperature) < 30) {
+      temperatureStatusRef.current = temperature;
+      alert("temperaure goes down! 🌡️🥳");
+    }
+  }, [temperature]);
+
+  useEffect(() => {
+    if (humidityStatusRef.current === humidity) return;
+    if (humidityStatusRef.current < 65 && Number(humidity) >= 65) {
+      humidityStatusRef.current = humidity;
+      alert("It's humid outside 😰 ! humidity keeps rising 🤕");
+    } else if (humidityStatusRef.current >= 65 && Number(humidity) < 65) {
+      humidityStatusRef.current = humidity;
+      alert("It's less humid right now! 😎");
+    }
+  }, [humidity]);
+
+  useEffect(() => {
+    if (rainStatusRef.current === RainValue) return;
+    if (rainStatusRef.current > 600 && Number(RainValue) <= 600) {
+      rainStatusRef.current = RainValue;
+      alert("It's raining  outside 🌧️ ! keep your umbrella near 🌂");
+    } else if (rainStatusRef.current <= 600 && Number(RainValue) > 600) {
+      rainStatusRef.current = RainValue;
+      alert("Rain has almost stopped! ☂️🥳");
+    }
+  }, [RainValue]);
 
   // Format the date for Kolkata time (IST) using Intl.DateTimeFormat
   let options = {

@@ -17,20 +17,23 @@ export async function GET(req) {
 
     const filters = {
       created_at: {
-        $gte: moment
-          .tz(startDate.replace("%20", " "), "Asia/Kolkata")
-          .utc()
+        $gte: moment(startDate.replace("%20", " "), "YYYY-MM-DD HH:mm:ss")
+          .add(5, "hours")
+          .add(30, "minutes")
           .toDate(),
-        $lte: moment
-          .tz(endDate.replace("%20", " "), "Asia/Kolkata")
-          .utc()
+        $lte: moment(endDate.replace("%20", " "), "YYYY-MM-DD HH:mm:ss")
+          .add(5, "hours")
+          .add(30, "minutes")
           .toDate(),
       },
     };
-    console.log(
-      moment.tz(startDate.replace("%20", " "), "Asia/Kolkata").toDate(),
-      moment.tz(endDate.replace("%20", " "), "Asia/Kolkata").toDate()
-    );
+    console.log(moment(startDate.replace("%20", " "), "YYYY-MM-DD HH:mm:ss")
+    .add(5, "hours")
+    .add(30, "minutes")
+    .toDate(),moment(endDate.replace("%20", " "), "YYYY-MM-DD HH:mm:ss")
+    .add(5, "hours")
+    .add(30, "minutes")
+    .toDate());
     const filteredReadings = await ReadingsModel.find(filters).lean();
 
     if (!filteredReadings.length) {
@@ -71,20 +74,20 @@ export async function GET(req) {
       console.log("inside xml formatter");
       // Create XML using xmlbuilder2
       const xml = create({ version: "1.0", encoding: "UTF-8" }).ele("root");
-      
+
       filteredReadings.forEach((reading) => {
         xml
-        .ele("item")
-        .ele("created_at")
-        .txt(reading.created_at.toISOString())
-        .up()
-        .ele("temperature")
-        .txt(reading.temperature)
-        .up()
-        .ele("humidity")
-        .txt(reading.humidity)
-        .up()
-        .up(); // Close 'item' element
+          .ele("item")
+          .ele("created_at")
+          .txt(reading.created_at.toISOString())
+          .up()
+          .ele("temperature")
+          .txt(reading.temperature)
+          .up()
+          .ele("humidity")
+          .txt(reading.humidity)
+          .up()
+          .up(); // Close 'item' element
       });
 
       const xmlString = xml.end({ prettyPrint: true });

@@ -5,7 +5,11 @@ export default function Card({ img, data, name }) {
   return (
     <div
       className={`items-center justify-between p-4  sm:p-6  ${
-        name === "Temperature" ? "bg-blue-200 " : "bg-green-200 "
+        name === "Temperature"
+          ? "bg-red-100 "
+          : name === "Humidity"
+          ? "bg-green-200 "
+          : "bg-blue-200"
       } rounded-lg hover:scale-105 transition-all duration-300
             ease-in-out  shadow-md hover:shadow-xl border border-gray-300`}
     >
@@ -14,7 +18,11 @@ export default function Card({ img, data, name }) {
           <Image alt={`${name} icon`} src={img} height={50}></Image>
           {name}
         </h2>
-        <span className={`text-2xl sm:text-3xl font-bold text-blue-500 ml-auto ${name==="RainValue" && "pr-5"}`}>
+        <span
+          className={`text-2xl sm:text-3xl font-bold text-blue-500 ml-auto ${
+            name === "RainValue" && "pr-5"
+          }`}
+        >
           {Number(data).toPrecision(4)}
           {`${name === "Temperature" ? "°C" : name === "RainValue" ? "" : "%"}`}
         </span>
