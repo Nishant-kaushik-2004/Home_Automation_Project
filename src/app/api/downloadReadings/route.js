@@ -17,12 +17,8 @@ export async function GET(req) {
     const filters = {
       created_at: {
         $gte: moment(startDate.replace("%20", " "), "YYYY-MM-DD HH:mm:ss")
-          .add(5, "hours")
-          .add(30, "minutes")
           .toDate(),
         $lte: moment(endDate.replace("%20", " "), "YYYY-MM-DD HH:mm:ss")
-          .add(5, "hours")
-          .add(30, "minutes")
           .toDate(),
       },
     };

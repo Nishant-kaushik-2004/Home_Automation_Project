@@ -20,7 +20,7 @@ export function DatePickerWithRange({ className, handleDateRange }) {
   });
   React.useEffect(() => {
     handleDateRange(date);
-  }, [date]);
+  }, [date,handleDateRange]);
   return (
     <div className={cn("grid gap-2", className) }>
       <Popover>

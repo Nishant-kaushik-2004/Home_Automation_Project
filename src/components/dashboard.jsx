@@ -132,29 +132,7 @@ const Dashboard = () => {
     second: "2-digit",
     hour12: false,
   };
-  // save data to mongoDB
-  const saveInDatabase = async (updation, data) => {
-    // Assume `created_at` is in UTC
-    let date = new Date(data.created_at);
-    // Calculate Kolkata time by adding the offset (5 hours 30 minutes)
-    let kolkataOffset = 5.5 * 60 * 60 * 1000; // Offset in milliseconds
-    let kolkataDate = new Date(date.getTime() + kolkataOffset);
 
-    let newTemperature = Number(data.field1).toPrecision(4);
-    let newHumidity = Number(data.field2).toPrecision(4);
-    let newRainValue = Number(data.field3).toPrecision(4);
-
-    try {
-      const response = await axios.post("api/storeInCloud", {
-        field1: updation === "updateTemperature" ? newTemperature : temperature,
-        field2: updation === "updateHumidity" ? newHumidity : humidity,
-        field3: updation === "updateRainValue" ? newRainValue : RainValue,
-        created_at: kolkataDate,
-      });
-    } catch (error) {
-      console.log("Failed to save data", error);
-    }
-  };
   // Function to fetch sensor data
   const fetchData = async () => {
     try {
@@ -165,7 +143,6 @@ const Dashboard = () => {
       let newTemperature = Number(lastEntry.field1).toPrecision(4);
       let newHumidity = Number(lastEntry.field2).toPrecision(4);
       let newRainValue = Number(lastEntry.field3).toPrecision(4);
-
       if (
         newTemperature != localStorage.getItem("temperature") &&
         newHumidity !== localStorage.getItem("humidity") &&
@@ -177,13 +154,13 @@ const Dashboard = () => {
         lastEntry.field2 &&
         lastEntry.field3
       ) {
-        setTemperature(newTemperature);
-        setHumidity(newHumidity);
-        setRainValue(newRainValue);
         localStorage.setItem("temperature", newTemperature);
         localStorage.setItem("humidity", newHumidity);
         localStorage.setItem("RainValue", newRainValue);
-        saveInDatabase("updateAll", lastEntry);
+        setTemperature(newTemperature);
+        setHumidity(newHumidity);
+        setRainValue(newRainValue);
+        saveInDatabase(lastEntry);
       } else if (
         newTemperature != localStorage.getItem("temperature") &&
         lastEntry.field1 !== "nan" &&
@@ -191,23 +168,23 @@ const Dashboard = () => {
       ) {
         setTemperature(newTemperature);
         localStorage.setItem("temperature", newTemperature);
-        saveInDatabase("updateTemperature", lastEntry);
+        saveInDatabase(lastEntry);
       } else if (
         newHumidity !== localStorage.getItem("humidity") &&
         lastEntry.field2 !== "nan" &&
         lastEntry.field2
       ) {
-        setHumidity(newHumidity);
         localStorage.setItem("humidity", newHumidity);
-        saveInDatabase("updateHumidity", lastEntry);
+        setHumidity(newHumidity);
+        saveInDatabase(lastEntry);
       } else if (
         newRainValue !== localStorage.getItem("RainValue") &&
         lastEntry.field3 !== "nan" &&
         lastEntry.field3
       ) {
-        setRainValue(newRainValue);
         localStorage.setItem("RainValue", newRainValue);
-        saveInDatabase("updateRainValue", lastEntry);
+        setRainValue(newRainValue);
+        saveInDatabase(lastEntry);
       }
 
       let date = new Date(lastEntry.created_at);
@@ -217,6 +194,25 @@ const Dashboard = () => {
     } catch (error) {
       setStatus(error.response ? error.response.status : 500);
       // console.error("Error fetching sensor data:", error);
+    }
+  };
+  // save data to mongoDB
+  const saveInDatabase = async (data) => {
+    // Assume `created_at` is in UTC
+    let date = new Date(data.created_at);
+    // Calculate Kolkata time by adding the offset (5 hours 30 minutes)
+    let kolkataOffset = 5.5 * 60 * 60 * 1000; // Offset in milliseconds
+    let kolkataDate = new Date(date.getTime() + kolkataOffset);
+
+    try {
+      const response = await axios.post("api/storeInCloud", {
+        field1: await localStorage.getItem("temperature"),
+        field2: await localStorage.getItem("humidity"),
+        field3: await localStorage.getItem("RainValue"),
+        created_at: kolkataDate,
+      });
+    } catch (error) {
+      console.log("Failed to save data", error);
     }
   };
 
