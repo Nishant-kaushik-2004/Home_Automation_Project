@@ -196,12 +196,12 @@ const Navbar = () => {
                           </p>
                         </div>
                         <div className="py-1">
-                          <Link href="/profile">
+                          {/* <Link href="/profile">
                             <div className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                               <FiUser className="mr-3 h-4 w-4" />
                               Profile
                             </div>
-                          </Link>
+                          </Link> */}
                           <button
                             onClick={() => signOut({ callbackUrl: "/" })}
                             className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -316,12 +316,12 @@ const Navbar = () => {
                     </div>
                   </div>
                   <div className="flex flex-col space-y-2 pt-2">
-                    <Link
+                    {/* <Link
                       href="/profile"
                       className="rounded-md bg-white px-4 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-50"
                     >
                       Profile
-                    </Link>
+                    </Link> */}
                     <button
                       onClick={() => signOut({ callbackUrl: "/auth/login" })}
                       className="rounded-md bg-red-50 px-4 py-2 text-center text-sm font-medium text-red-600 hover:bg-red-100"

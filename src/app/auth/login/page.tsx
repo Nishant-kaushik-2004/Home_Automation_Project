@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
-import { FaGithub, FaDiscord } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -240,7 +240,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-9 mx-5">
             <motion.button
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -257,14 +257,14 @@ export default function LoginPage() {
             >
               <FaGithub className="h-5 w-5" />
             </motion.button>
-            <motion.button
+            {/* <motion.button
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => signIn("discord", { callbackUrl: "/dashboard" })}
               className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
             >
               <FaDiscord className="h-5 w-5 text-indigo-600" />
-            </motion.button>
+            </motion.button> */}
           </div>
 
           <div className="text-center text-sm">
