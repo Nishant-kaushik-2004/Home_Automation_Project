@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { HiMiniInformationCircle } from "react-icons/hi2";
 import ThingSpeakDataDownloader from "@/components/downloadButton";
 import Chart from "@/components/chart";
-import LEDController from "@/components/ledController";
+import LEDController from "@/components/LEDController";
 
 const Dashboard = () => {
   const [temperature, setTemperature] = useState(0);

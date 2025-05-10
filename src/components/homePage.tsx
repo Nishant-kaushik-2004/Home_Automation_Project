@@ -55,7 +55,7 @@ export default function HomePage() {
       transition: {
         duration: 6,
         repeat: Infinity,
-        repeatType: "reverse",
+        repeatType: "reverse" as const, // Explicitly cast to the allowed literal type
         ease: "easeInOut",
       },
     },
