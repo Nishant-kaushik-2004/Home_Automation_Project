@@ -1,21 +1,13 @@
-import type { Metadata } from "next";
+// src/app/layout.tsx
 import "./globals.css";
+import AuthProvider from "@/components/auth/AuthProvider";
+import { ReactNode } from "react";
 
-export const metadata: Metadata = {
-  title: "Real-Time sensor dashboard",
-  description: "Real-Time sensor dashboard for Home Automation project",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body
-      >
-        {children}
+      <body>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

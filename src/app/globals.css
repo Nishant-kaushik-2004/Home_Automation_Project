@@ -1,13 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-.no-wrap-toast {
-  white-space: nowrap;
+:root {
+  --background: 255 255 255; /* white */
+  --foreground: 0 0 0;       /* black */
+  --radius: 0.5rem;
 }
 
-@layer base {
-  :root {
-    --radius: 0.5rem;
-  }
+.dark {
+  --background: 0 0 0;       /* dark bg */
+  --foreground: 255 255 255; /* light text */
 }
+
+/* Custom CSS below */
