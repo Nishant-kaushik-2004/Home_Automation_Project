@@ -19,8 +19,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: Partial<Record<"email" | "password", unknown>>) {
-        if (typeof credentials?.email !== "string" || typeof credentials?.password !== "string") {
+      async authorize(
+        credentials: Partial<Record<"email" | "password", unknown>>
+      ) {
+        if (
+          typeof credentials?.email !== "string" ||
+          typeof credentials?.password !== "string"
+        ) {
           return null;
         }
         if (!credentials?.email || !credentials?.password) {
@@ -77,6 +82,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   session: {
     strategy: "jwt",
+  },
+  cookies: {
+    sessionToken: {
+      name: "__Secure-next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        domain: process.env.NODE_ENV === "production" 
+          ? "home-automation-project.vercel.app" // No leading dot
+          : undefined,
+      },
+    },
   },
   secret: process.env.NEXTAUTH_SECRET!,
   trustHost: true, // Required for Vercel/deployments
