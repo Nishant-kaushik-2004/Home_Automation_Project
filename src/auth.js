@@ -2,13 +2,13 @@ import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/prisma";
 import bcrypt from "bcryptjs";
 import Google from "next-auth/providers/google";
-
-const prisma = new PrismaClient();
+import { authConfig } from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(prisma),
   providers: [
     Google,
@@ -19,9 +19,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(
-        credentials: Partial<Record<"email" | "password", unknown>>
-      ) {
+      async authorize(credentials) {
         if (
           typeof credentials?.email !== "string" ||
           typeof credentials?.password !== "string"
@@ -80,23 +78,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
   },
-  session: {
-    strategy: "jwt",
-  },
-  cookies: {
-    sessionToken: {
-      name: "__Secure-next-auth.session-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        domain: process.env.NODE_ENV === "production" 
-          ? "home-automation-project.vercel.app" // No leading dot
-          : undefined,
-      },
-    },
-  },
-  secret: process.env.NEXTAUTH_SECRET!,
+  // cookies: {
+  //   sessionToken: {
+  //     name: "__Secure-next-auth.session-token",
+  //     options: {
+  //       httpOnly: true,
+  //       sameSite: "lax",
+  //       path: "/",
+  //       secure: process.env.NODE_ENV === "production",
+  //       domain: process.env.NODE_ENV === "production"
+  //         ? "home-automation-project.vercel.app" // No leading dot
+  //         : undefined,
+  //     },
+  //   },
+  // },
+  secret: process.env.AUTH_SECRET,
   trustHost: true, // Required for Vercel/deployments
 });

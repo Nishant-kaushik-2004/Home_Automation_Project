@@ -244,7 +244,7 @@ export default function LoginPage() {
             <motion.button
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+              onClick={() => signIn("google", { redirectTo: "/dashboard" })}
               className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
             >
               <FcGoogle className="h-5 w-5" />
@@ -252,7 +252,7 @@ export default function LoginPage() {
             <motion.button
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+              onClick={() => signIn("github", { redirectTo: "/dashboard" })}
               className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
             >
               <FaGithub className="h-5 w-5" />
