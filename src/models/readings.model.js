@@ -14,6 +14,10 @@ const SensorReadingSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  LDRValue: {
+    type: String,
+    required: true,
+  },
 });
 
 const ReadingsModel =

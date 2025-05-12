@@ -5,6 +5,7 @@ import axios from "axios";
 import TempImage from "@/public/temperature.png";
 import HumidityImg from "@/public/humidity.png";
 import rainImg from "@/public/rainIcon.png";
+import sunIcon from "@/public/sunIcon.png";
 import Card from "@/components/card";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,21 +18,21 @@ const Dashboard = () => {
   const [temperature, setTemperature] = useState(0);
   const [humidity, setHumidity] = useState(0);
   const [RainValue, setRainValue] = useState(0);
-  const [ledStatus, setLEDStatus] = useState(0);
-  const [ledBrightness, setLEDBrightness] = useState(0);
+  const [ledBrightness, setLEDbrightness] = useState(0);
+  const [LDRvalue, setLDRvalue] = useState(0);
   const [status, setStatus] = useState(null);
   const [lastActive, setLastActive] = useState(null);
   const prevStatusRef = useRef(null);
   const temperatureStatusRef = useRef();
   const humidityStatusRef = useRef();
   const rainStatusRef = useRef();
-  const ledStatusRef = useRef(ledStatus);
+  const LDRvalueRef = useRef(LDRvalue);
   const ledBrightnessRef = useRef(ledBrightness);
 
   // Update refs when state changes
   useEffect(() => {
-    ledStatusRef.current = ledStatus;
-  }, [ledStatus]);
+    LDRvalueRef.current = LDRvalue;
+  }, [LDRvalue]);
 
   useEffect(() => {
     ledBrightnessRef.current = ledBrightness;
@@ -178,39 +179,31 @@ const Dashboard = () => {
 
       const toNum = (val) => Number(Number(val).toFixed(2));
 
+      let newLEDbrightness = Number(lastEntry.field1);
       let newTemperature = toNum(lastEntry.field2);
       let newHumidity = toNum(lastEntry.field3);
       let newRainValue = toNum(lastEntry.field4);
-
-      let newLEDstatus = Number(lastEntry.field5);
-      let newLEDbrightness = Number(lastEntry.field1);
+      let newLDRvalue = toNum(lastEntry.field5);
 
       if (
         !isNaN(newTemperature) &&
         !isNaN(newHumidity) &&
         !isNaN(newRainValue) &&
+        !isNaN(newLDRvalue) &&
         (temperatureStatusRef.current !== newTemperature ||
           humidityStatusRef.current !== newHumidity ||
-          rainStatusRef.current !== newRainValue)
+          rainStatusRef.current !== newRainValue ||
+          LDRvalueRef.current !== newLDRvalue)
       ) {
         setTemperature(newTemperature);
         setHumidity(newHumidity);
         setRainValue(newRainValue);
+        setLDRvalue(newLDRvalue);
         saveInDatabase(lastEntry);
       }
 
-      if (
-        ledStatusRef.current !== newLEDstatus ||
-        ledBrightnessRef.current !== newLEDbrightness
-      ) {
-        // console.log(
-        //   "ledStatusRef.current -> ",
-        //   ledStatusRef.current,
-        //   " ledBrightnessRef.current ->",
-        //   ledBrightnessRef.current
-        // );
-        setLEDStatus(newLEDstatus);
-        setLEDBrightness(newLEDbrightness);
+      if (ledBrightnessRef.current !== newLEDbrightness) {
+        setLEDbrightness(newLEDbrightness);
       }
 
       let date = new Date(lastEntry.created_at);
@@ -232,9 +225,10 @@ const Dashboard = () => {
 
     try {
       const response = await axios.post("api/storeInCloud", {
-        field1: data.field2,
-        field2: data.field3,
-        field3: data.field4,
+        field1: Number(data.field2).toFixed(1),
+        field2: Number(data.field3).toFixed(1),
+        field3: Number((data.field4 / 1023) * 20).toFixed(2),
+        field4: data.field5,
         created_at: kolkataDate,
       });
     } catch (error) {
@@ -249,22 +243,18 @@ const Dashboard = () => {
           Real-Time Sensor Monitoring Interface
         </h1>
         <div className="sm:flex justify-around">
-          <div className="space-y-6 sm:space-y-4">
+          <div className="space-y-6 sm:space-y-8">
             <Card img={TempImage} data={temperature} name={"Temperature"} />
             <Card img={HumidityImg} data={humidity} name={"Humidity"} />
-            <Card img={rainImg} data={RainValue} name={"RainValue"} />
-
-            {/* LED Control Area */}
-            <LEDController
-              temperature={temperature}
-              humidity={humidity}
-              RainValue={RainValue}
-              ledBrightness={ledBrightness}
-              ledStatus={ledStatus === 0 ? false : true}
+            <Card
+              img={rainImg}
+              data={(RainValue / 1023) * 20}
+              name={"Rain Value"}
             />
+            <Card img={sunIcon} data={LDRvalue} name={"LDR Value"} />
 
             <div
-              className="flex items-center text-sm sm:text-base px-2 sm:px-4 py-2 mb-4 text-blue-700 bg-blue-100 border border-blue-300 rounded-lg"
+              className="flex items-center text-sm sm:text-base px-2 sm:px-4 py-2 mb-6 text-blue-700 bg-blue-100 border border-blue-300 rounded-lg"
               role="alert"
             >
               <HiMiniInformationCircle className="w-6 h-6 mr-2" />
@@ -272,6 +262,16 @@ const Dashboard = () => {
                 <p className="">Last Sensor Activity at {`${lastActive}`}</p>
               </div>
             </div>
+
+            {/* LED Control Area */}
+            <LEDController
+              ledBrightness={ledBrightness}
+              temperature={temperature}
+              humidity={humidity}
+              RainValue={RainValue}
+              LDRvalue={LDRvalue}
+            />
+
             <div className="hidden md:block">
               <ThingSpeakDataDownloader />
             </div>
@@ -279,15 +279,17 @@ const Dashboard = () => {
               <Chart fieldValue={2}></Chart>
               <Chart fieldValue={3}></Chart>
               <Chart fieldValue={4}></Chart>
+              <Chart fieldValue={5}></Chart>
             </div>
           </div>
           <div className="block md:hidden -mt-8">
             <ThingSpeakDataDownloader />
           </div>
-          <div className="sm:space-y-0 hidden md:block">
+          <div className="sm:space-y-2 hidden md:block">
             <Chart fieldValue={2}></Chart>
             <Chart fieldValue={3}></Chart>
             <Chart fieldValue={4}></Chart>
+            <Chart fieldValue={5}></Chart>
           </div>
         </div>
       </div>

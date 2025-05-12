@@ -16,10 +16,14 @@ export async function GET(req) {
 
     const filters = {
       created_at: {
-        $gte: moment(startDate.replace("%20", " "), "YYYY-MM-DD HH:mm:ss")
-          .toDate(),
-        $lte: moment(endDate.replace("%20", " "), "YYYY-MM-DD HH:mm:ss")
-          .toDate(),
+        $gte: moment(
+          startDate.replace("%20", " "),
+          "YYYY-MM-DD HH:mm:ss"
+        ).toDate(),
+        $lte: moment(
+          endDate.replace("%20", " "),
+          "YYYY-MM-DD HH:mm:ss"
+        ).toDate(),
       },
     };
     const filteredReadings = await ReadingsModel.find(filters).lean();
@@ -38,7 +42,7 @@ export async function GET(req) {
       // You can modify this based on what fields you want to include/exclude
       const cleanData = filteredReadings.map(({ _id, __v, ...rest }) => rest);
       const opts = {
-        fields: Object.keys(cleanData[0]), // Gets fields from first document
+        fields: Object.keys(cleanData[cleanData.length - 1]), // Gets fields from first document
         delimiter: ",",
         header: true,
       };
@@ -62,17 +66,23 @@ export async function GET(req) {
       // Create XML using xmlbuilder2
       const xml = create({ version: "1.0", encoding: "UTF-8" }).ele("root");
 
-      filteredReadings.forEach((reading) => {
+      filteredReadings.forEach((readings) => {
         xml
           .ele("item")
           .ele("created_at")
-          .txt(reading.created_at.toISOString())
+          .txt(readings.created_at.toISOString())
           .up()
           .ele("temperature")
-          .txt(reading.temperature)
+          .txt(readings.temperature)
           .up()
           .ele("humidity")
-          .txt(reading.humidity)
+          .txt(readings.humidity)
+          .up()
+          .ele("RainValue")
+          .txt(readings.RainValue)
+          .up()
+          .ele("LDRValue")
+          .txt(readings.LDRValue)
           .up()
           .up(); // Close 'item' element
       });

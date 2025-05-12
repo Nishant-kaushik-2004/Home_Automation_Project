@@ -36,7 +36,13 @@ export default function Chart({ fieldValue }) {
         src={`https://thingspeak.com/channels/${
           process.env.NEXT_PUBLIC_CHANNEL_ID
         }/charts/${fieldValue}?title=${
-          fieldValue === 2 ? "Temperature" : (fieldValue === 3 ? "Humidity" : "Rain")
+          fieldValue === 2
+            ? "Temperature"
+            : fieldValue === 3
+            ? "Humidity"
+            : fieldValue === 4
+            ? "Rain"
+            : "Light Intesity (LDR)"
         } Monitoring&width=${width}&height=${height}&dynamic=true&api_key=${
           process.env.NEXT_PUBLIC_API_KEY
         }`}

@@ -3,18 +3,19 @@ import { Power, Sun } from "lucide-react";
 import axios from "axios";
 
 export default function LEDController({
+  ledBrightness,
   temperature,
   humidity,
   RainValue,
-  ledBrightness,
-  ledStatus,
+  LDRvalue,
 }) {
-  const [isOn, setIsOn] = useState(ledStatus);
+  const [isOn, setIsOn] = useState(false);
   const [brightness, setBrightness] = useState(ledBrightness);
   const [isAnimating, setIsAnimating] = useState(false);
+
   useEffect(() => {
-    setIsOn(ledStatus);
-  }, [ledStatus]);
+    setIsOn(ledBrightness > 0 ? true : false);
+  }, [ledBrightness]);
 
   useEffect(() => {
     setBrightness(ledBrightness);
@@ -39,14 +40,14 @@ export default function LEDController({
   const handleToggle = async () => {
     const newStatus = !isOn;
     setIsOn(newStatus);
-
+    // console.log("newStatus -> ",newStatus);
     try {
       const { data } = await axios.get(
         `https://api.thingspeak.com/update?api_key=${
           process.env.NEXT_PUBLIC_WRITE_API_KEY
-        }&field1=${brightness}&field2=${temperature}&field3=${humidity}&field4=${RainValue}&field5=${
-          newStatus ? 1 : 0
-        }`
+        }&field1=${
+          isOn ? 0 : 50
+        }&field2=${temperature}&field3=${humidity}&field4=${RainValue}&field5=${LDRvalue}`
       );
       console.log("LED toggle response:", data);
     } catch (error) {
@@ -56,14 +57,12 @@ export default function LEDController({
 
   // Update brightness value
   const handleBrightnessChange = async (e) => {
-    setBrightness(parseInt(e.target.value));
+    const newBrightness = parseInt(e.target.value);
+    setBrightness(newBrightness);
+    setIsOn(newBrightness > 0 ? true : false);
     try {
       const { data } = await axios.get(
-        `https://api.thingspeak.com/update?api_key=${
-          process.env.NEXT_PUBLIC_WRITE_API_KEY
-        }&field1=${e.target.value}&field2=${temperature}&field3=${humidity}&field4=${RainValue}&field5=${
-          isOn ? 1 : 0
-        }`
+        `https://api.thingspeak.com/update?api_key=${process.env.NEXT_PUBLIC_WRITE_API_KEY}&field1=${newBrightness}&field2=${temperature}&field3=${humidity}&field4=${RainValue}&field5=${LDRvalue}`
       );
       console.log("brightness change response:", data);
     } catch (error) {
@@ -134,7 +133,7 @@ export default function LEDController({
           value={brightness}
           onChange={handleBrightnessChange}
           disabled={!isOn}
-          className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-red-500"
+          className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-red-500 disabled:cursor-auto"
         />
         <div className="flex justify-between text-xs text-gray-400 mt-1">
           <span>0%</span>
