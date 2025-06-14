@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { getSession, signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
@@ -13,13 +13,16 @@ import { motion } from "framer-motion";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -41,6 +44,7 @@ export default function LoginPage() {
         email: data.email,
         password: data.password,
         redirect: false,
+        redirectTo: callbackUrl,
       });
 
       if (result?.error) {
@@ -49,10 +53,24 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/dashboard");
-      router.refresh();
-    } catch {
+      // Optional: wait for session to ensure user is authenticated
+      const session = await getSession();
+      if (!session) {
+        setError("Login succeeded, but session is not available.");
+        setIsLoading(false);
+        return;
+      }
+
+      // ✅ Final Redirect - Clean URL, works with middleware
+      window.location.href = callbackUrl;
+
+      // router.push("/dashboard"); // This is the alternative if want SPA-style redirection.
+      // router.refresh();
+
+    } catch (err) {
+      console.error("Login error:", err);
       setError("Something went wrong. Please try again.");
+    } finally {
       setIsLoading(false);
     }
   };
